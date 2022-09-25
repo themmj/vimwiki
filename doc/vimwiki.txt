@@ -2896,15 +2896,15 @@ The handler should return the empty string when it does not recognize or
 cannot otherwise convert the link.  A customized handler might look like this: >
 
   " Convert {{URL|#|ID}} -> URL#ID
-  function! VimwikiWikiIncludeHandler(value)
+  function! VimwikiWikiIncludeHandler(value, source_wiki_file, target_html_file)
     let str = a:value
 
     " complete URL
     let url_0 = matchstr(str, g:vimwiki_rxWikiInclMatchUrl)
     " URL parts
     let link_infos = vimwiki#base#resolve_link(url_0)
-    let arg1 = matchstr(str, VimwikiWikiInclMatchArg(1))
-    let arg2 = matchstr(str, VimwikiWikiInclMatchArg(2))
+    let arg1 = matchstr(str, vimwiki#html#incl_match_arg(1))
+    let arg2 = matchstr(str, vimwiki#html#incl_match_arg(2))
 
     if arg1 =~ '#'
       return link_infos.filename.'#'.arg2

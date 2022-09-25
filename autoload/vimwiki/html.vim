@@ -386,7 +386,7 @@ endfunction
 
 "   match n-th ARG within {{URL[|ARG1|ARG2|...]}}
 " *c,d,e),...
-function! s:incl_match_arg(nn_index) abort
+function! vimwiki#html#incl_match_arg(nn_index) abort
   let rx = vimwiki#vars#get_global('rxWikiInclPrefix'). vimwiki#vars#get_global('rxWikiInclUrl')
   let rx = rx . repeat(vimwiki#vars#get_global('rxWikiInclSeparator') .
         \ vimwiki#vars#get_global('rxWikiInclArg'), a:nn_index-1)
@@ -411,7 +411,7 @@ function! s:linkify_link(src, descr) abort
 endfunction
 
 
-function! s:linkify_image(src, descr, verbatim_str) abort
+function! vimwiki#html#linkify_image(src, descr, verbatim_str) abort
   let src_str = ' src="'.a:src.'"'
   let descr_str = (a:descr !=? '' ? ' alt="'.a:descr.'"' : '')
   let verbatim_str = (a:verbatim_str !=? '' ? ' '.a:verbatim_str : '')
@@ -436,13 +436,12 @@ function! s:tag_wikiincl(value) abort
   " {{imgurl|descr|class="B"}} -> <img src="imgurl" alt="descr" class="B" />
   let str = a:value
   " custom transclusions
-  let line = VimwikiWikiIncludeHandler(str)
+  let line = VimwikiWikiIncludeHandler(str, s:current_wiki_file, s:current_html_file)
   " otherwise, assume image transclusion
   if line ==? ''
     let url_0 = matchstr(str, vimwiki#vars#get_global('rxWikiInclMatchUrl'))
-    let descr = matchstr(str, s:incl_match_arg(1))
-    let verbatim_str = matchstr(str, s:incl_match_arg(2))
-
+    let descr = matchstr(str, vimwiki#html#incl_match_arg(1))
+    let verbatim_str = matchstr(str, vimwiki#html#incl_match_arg(2))
     let link_infos = vimwiki#base#resolve_link(url_0)
 
     if link_infos.scheme =~# '\mlocal\|wiki\d\+\|diary'
@@ -455,9 +454,8 @@ function! s:tag_wikiincl(value) abort
     else
       let url = link_infos.filename
     endif
-
     let url = escape(url, '#')
-    let line = s:linkify_image(url, descr, verbatim_str)
+    let line = vimwiki#html#linkify_image(url, descr, verbatim_str)
   endif
   return line
 endfunction

@@ -245,7 +245,7 @@ if !exists('*VimwikiLinkConverter')
 endif
 
 if !exists('*VimwikiWikiIncludeHandler')
-  function! VimwikiWikiIncludeHandler(value)
+  function! VimwikiWikiIncludeHandler(value, source_wiki_file, target_html_file)
     return ''
   endfunction
 endif
